@@ -24,11 +24,20 @@ include('../../partials/navbar.ejs') %>
         <th><%= category.title %></th>
         <th><%= category.slug %></th>
         <th>
-          <button class="btn btn-warning">Editar</button>
+          <form
+            method="GET"
+            action="/admin/categories/edit/<%= category.id %>"
+            style="display: inline"
+          >
+            <input type="hidden" name="id" value="<%= category.id %>" />
+            <button class="btn btn-warning">Editar</button>
+          </form>
+
           <form
             method="POST"
             action="/categories/delete"
             style="display: inline"
+            onsubmit="confirmDelete(event)"
           >
             <input type="hidden" name="id" value="<%= category.id %>" />
             <button class="btn btn-danger">Excluir</button>
@@ -41,3 +50,12 @@ include('../../partials/navbar.ejs') %>
 </div>
 
 <%- include('../../partials/footer.ejs') %>
+
+<script>
+  // funcao para confirmar a exclusão de uma categoria
+  function confirmDelete(event) {
+    event.preventDefault();
+    confirm("Você tem certeza que deseja excluir esta categoria?") &&
+      event.target.submit();
+  }
+</script>

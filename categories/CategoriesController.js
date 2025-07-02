@@ -14,7 +14,7 @@ router.post("/categories/save", (req, res) => {
       title: title,
       slug: slugify(title),
     }).then(() => {
-      res.redirect("/");
+      res.redirect("/admin/categories");
     });
   } else {
     res.redirect("/admin/categories/new");
@@ -46,6 +46,41 @@ router.post("/categories/delete", (req, res) => {
     // null
     res.redirect("/admin/categories");
   }
+});
+
+router.get("/admin/categories/edit/:id", (req, res) => {
+  var id = req.params.id;
+
+  if (isNaN(id)) {
+    // se n for numero
+    res.redirect("/admin/categories");
+    return;
+  }
+
+  Category.findByPk(id) // findByPk busca pelo id primário
+    .then((cat) => {
+      if (cat != undefined) {
+        res.render("admin/categories/edit", { cat: cat });
+      } else {
+        res.redirect("/admin/categories");
+      }
+    })
+    .catch((err) => {
+      // erro ao buscar categoria
+      res.redirect("/admin/categories");
+    });
+});
+
+router.post("/categories/update", (req, res) => {
+  var id = req.body.id;
+  var title = req.body.title;
+
+  Category.update(
+    { title: title, slug: slugify(title) },
+    { where: { id: id } }
+  ).then(() => {
+    res.redirect("/admin/categories");
+  });
 });
 
 module.exports = router;
