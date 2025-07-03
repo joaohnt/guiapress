@@ -1,0 +1,48 @@
+<%- include('../../partials/header.ejs') %> <%-
+include('../../partials/navbar.ejs') %>
+
+<div class="container">
+  <hr />
+  <div class="card">
+    <div class="card-header">
+      <h2>Edição de artigo</h2>
+    </div>
+    <div class="card-body">
+      <form method="POST" action="/articles/update">
+        <input
+          class="form-control"
+          type="text"
+          name="title"
+          placeholder="Defina o título do artigo"
+          value="<%= article.title %>"
+        />
+        <br />
+        <textarea
+          class="form-control"
+          name="body"
+          id="article"
+          rows="8"
+        ><%= article.body %></textarea>
+        <br />
+        <input type="hidden" name="id" value="<%= article.id %>" />
+        <button class="btn btn-success">Atualizar</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<%- include('../../partials/footer.ejs') %>
+
+<script src="/tinymce/tinymce.min.js"></script>
+<script>
+  tinymce.init({
+    // configurando o tinymce
+    selector: "#article", //id do textarea
+    plugins: [
+      // plugin pra caralho nem sei oq todos fazem
+      "advlist autolink lists link image charmap print preview anchor emoticons",
+      "searchreplace visualblocks code fullscreen",
+      "insertdatetime media table paste code help wordcount table",
+    ],
+  });
+</script>
