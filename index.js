@@ -2,12 +2,15 @@ const express = require("express");
 const app = express();
 const bodyParser = require("body-parser");
 const conn = require("./database/database");
+const session = require("express-session");
 
 const categoriesController = require("./categories/CategoriesController");
 const articlesController = require("./articles/ArticlesController");
+const usersController = require("./users/UsersController");
 
 const Article = require("./articles/Article");
 const Category = require("./categories/Category");
+const User = require("./users/User");
 
 //db
 conn
@@ -22,6 +25,27 @@ conn
 //view engine
 app.set("view engine", "ejs");
 
+//session
+app.use(
+  session({
+    secret: "VitaminaDeAbacateGostoMuito",
+    cookie: { maxAge: 300000 }, // 5 min
+  })
+);
+// app.get("/session", (req, res) => {
+//   req.session.joao = "pedro";
+//   req.session.empresa = "Guiapress";
+//   req.session.ano = 2023;
+//   res.send("Sessão criada com sucesso!");
+// });
+// app.get("/leitura", (req, res) => {
+//   res.json({
+//     joao: req.session.joao,
+//     empresa: req.session.empresa,
+//     ano: req.session.ano,
+//   });
+// });
+
 //static files
 app.use(express.static("public"));
 
@@ -31,6 +55,7 @@ app.use(bodyParser.json());
 
 app.use("/", categoriesController);
 app.use("/", articlesController);
+app.use("/", usersController);
 
 app.get("/", (req, res) => {
   Article.findAll({

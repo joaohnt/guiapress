@@ -3,20 +3,21 @@ const router = express.Router();
 const Category = require("../categories/Category");
 const slugify = require("slugify");
 const Article = require("./Article");
+const adminAuth = require("../middlewares/adminAuth");
 
-router.get("/admin/articles", (req, res) => {
+router.get("/admin/articles", adminAuth, (req, res) => {
   Article.findAll({ include: [{ model: Category }] }).then((articles) => {
     res.render("admin/articles/index", { articles: articles });
   });
 });
 
-router.get("/admin/articles/new", (req, res) => {
+router.get("/admin/articles/new", adminAuth, (req, res) => {
   Category.findAll().then((categories) => {
     res.render("admin/articles/new", { categories: categories });
   });
 });
 
-router.post("/articles/save", (req, res) => {
+router.post("/articles/save", adminAuth, (req, res) => {
   var title = req.body.title;
   var body = req.body.body;
   var category = req.body.category;
@@ -31,7 +32,7 @@ router.post("/articles/save", (req, res) => {
   });
 });
 
-router.post("/articles/delete", (req, res) => {
+router.post("/articles/delete", adminAuth, (req, res) => {
   var id = req.body.id;
   if (id != undefined) {
     if (!isNaN(id)) {
@@ -52,7 +53,7 @@ router.post("/articles/delete", (req, res) => {
   }
 });
 
-router.get("/admin/articles/edit/:id", (req, res) => {
+router.get("/admin/articles/edit/:id", adminAuth, (req, res) => {
   var id = req.params.id;
 
   if (isNaN(id)) {
@@ -74,7 +75,7 @@ router.get("/admin/articles/edit/:id", (req, res) => {
       res.redirect("/admin/articles");
     });
 });
-router.post("/articles/update", (req, res) => {
+router.post("/articles/update", adminAuth, (req, res) => {
   var id = req.body.id;
   var title = req.body.title;
   var body = req.body.body;
@@ -88,25 +89,24 @@ router.post("/articles/update", (req, res) => {
 });
 
 router.get("/articles/page/:num", (req, res) => {
-  var page = req.params.num;
-  var offset = 0;
-  if (isNaN(page) || page == 1) {
-    offset = 0;
-  } else {
-    offset = parseInt(page) * 4 - 1; // 4 artigos por página
+  var page = parseInt(req.params.num);
+  if (isNaN(page) || page <= 1) {
+    // Se for página 1 ou inválida, redireciona para a home
+    res.redirect("/");
+    return;
   }
+
+  var offset = (page - 1) * 4; // 4 artigos por página
+
   Article.findAndCountAll({
     limit: 4,
     offset: offset,
     order: [["id", "DESC"]],
   }).then((articles) => {
-    var next = true;
-    if (offset + 4 >= articles.count) {
-      next = false; // n ha proxima paina
-    }
+    var next = offset + 4 < articles.count;
 
     var result = {
-      page: parseInt(page),
+      page: page,
       articles: articles,
       next: next,
     };

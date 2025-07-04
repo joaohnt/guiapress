@@ -20,7 +20,7 @@ const Article = connection.define("articles", {
 Article.belongsTo(Category); // 1-1
 Category.hasMany(Article); // 1-N
 
-// Article.sync({ force: true }); // vai criar a tabela smp q executar o código, geralmente so roda na 1 vez
+//Article.sync({ force: true }); // vai criar a tabela smp q executar o código, geralmente so roda na 1 vez
 // Cuidado com o force: true, pois ele deleta a tabela e cria novamente, perdendo os dados
 
 module.exports = Article;
