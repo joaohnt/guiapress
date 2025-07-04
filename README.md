@@ -49,7 +49,7 @@ GuiaPress é um sistema simples de gerenciamento de artigos e categorias, desenv
 
 5. **Acesse no navegador:**
    ```
-   http://localhost:3000
+   http://localhost:8080
    ```
 
 ## Estrutura de pastas
